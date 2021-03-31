@@ -1,8 +1,13 @@
 .grid-layout {
-  margin: 1rem;
   padding: 1rem;
 }
 
 .grid-row {
   margin-bottom: -4px;
+}
+
+.node-legend {
+  margin: 0;
+  width: 15px;
+  height: 15px;
 }

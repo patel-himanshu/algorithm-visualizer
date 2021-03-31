@@ -1,16 +1,8 @@
-.node {
-  margin: 2px;
-  width: 30px;
-  height: 30px;
-  display: inline-block;
-  outline: 1px solid black;
-}
-
-.node-start {
+.node-source {
   background-color: green;
 }
 
-.node-end {
+.node-target {
   background-color: red;
 }
 

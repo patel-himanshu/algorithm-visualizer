@@ -3,12 +3,13 @@ import "./Node.css";
 
 export default class Node extends Component {
   render() {
-    const { row, col, isStartNode, isEndNode } = this.props;
+    const { row, col, isSourceNode, isTargetNode } = this.props;
+
     let otherClassName = "";
-    if (isStartNode) {
-      otherClassName = "node-start";
-    } else if (isEndNode) {
-      otherClassName = "node-end";
+    if (isSourceNode) {
+      otherClassName = "node-source";
+    } else if (isTargetNode) {
+      otherClassName = "node-target";
     }
 
     return (
