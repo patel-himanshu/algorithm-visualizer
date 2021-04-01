@@ -1,42 +1,99 @@
 import React, { Component } from "react";
+import { dijkstra, getShortestPath } from "../../algorithms/Dijkstra";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-const GRID_WIDTH = 20;
-const GRID_HEIGHT = 15;
-const SOURCE_NODE_ROW = 4;
-const SOURCE_NODE_COL = 4;
-const TARGET_NODE_ROW = 10;
-const TARGET_NODE_COL = 15;
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 10;
+const SOURCE_NODE_ROW = 3;
+const SOURCE_NODE_COL = 3;
+const TARGET_NODE_ROW = 5;
+const TARGET_NODE_COL = 5;
+
+// const BOARD_WIDTH = 3;
+// const BOARD_HEIGHT = 3;
+// const SOURCE_NODE_ROW = 1;
+// const SOURCE_NODE_COL = 0;
+// const TARGET_NODE_ROW = 2;
+// const TARGET_NODE_COL = 2;
 
 export default class Visualizer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: [],
+      board: [],
+      pathLength: 0,
       isDoubleClickActive: false,
     };
   }
 
-  // Creates a 2D grid array after the mounting phase of the component gets completed
+  // Creates a 2D board array after the mounting phase of the component gets completed
   componentDidMount() {
-    const grid = getGridArray();
-    this.setState({ grid: grid });
+    const board = getBoardArray();
+    this.setState({ board: board });
+  }
+
+  animateDijkstra(visitedNodes, shortestPathOrder) {
+    for (let i = 0; i <= visitedNodes.length; i++) {
+      if (i === visitedNodes.length) {
+        setTimeout(() => {
+          this.animateShortestPath(shortestPathOrder);
+        }, 20 * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodes[i];
+        if (
+          !(node.row === SOURCE_NODE_ROW && node.col === SOURCE_NODE_COL) &&
+          !(node.row === TARGET_NODE_ROW && node.col === TARGET_NODE_COL)
+        ) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited";
+        }
+      }, 20 * i);
+    }
+  }
+
+  animateShortestPath(shortestPathOrder) {
+    document.getElementById(
+      `node-${SOURCE_NODE_ROW}-${SOURCE_NODE_COL}`
+    ).className = "node node-source node-final";
+
+    for (let i = 0; i < shortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = shortestPathOrder[i];
+        document.getElementById(`node-${node.row}-${node.col}`).className =
+          "node node-shortest-path node-final";
+      }, 100 * i);
+    }
+
+    document.getElementById(
+      `node-${TARGET_NODE_ROW}-${TARGET_NODE_COL}`
+    ).className = "node node-target node-final";
+    this.setState({ pathLength: shortestPathOrder.length });
   }
 
   visualize() {
-    const { grid } = this.state;
-    const sourceNode = grid[SOURCE_NODE_ROW][SOURCE_NODE_COL];
-    const targetNode = grid[TARGET_NODE_ROW][TARGET_NODE_COL];
+    const { board } = this.state;
+    const sourceNode = board[SOURCE_NODE_ROW][SOURCE_NODE_COL];
+    const targetNode = board[TARGET_NODE_ROW][TARGET_NODE_COL];
+    const visitedNodes = dijkstra(board, sourceNode, targetNode);
+    const shortestPathOrder = getShortestPath(targetNode);
+    this.animateDijkstra(visitedNodes, shortestPathOrder);
   }
 
   render() {
-    const { grid } = this.state;
+    const { board, pathLength } = this.state;
     const legend = [
-      { name: "Source Node", bgColor: "red" },
-      { name: "Target Node", bgColor: "green" },
-      { name: "Wall Node", bgColor: "purple" },
-      { name: "Shortest Path", bgColor: "yellow" },
+      { name: "Source Node", nodeClass: "node-source" },
+      { name: "Target Node", nodeClass: "node-target" },
+      { name: "Wall Node", nodeClass: "node-wall" },
+      { name: "Unvisited Node", nodeClass: "node" },
+      { name: "Visited Node", nodeClass: "node-visited" },
+      {
+        name: "Shortest Path",
+        nodeClass: "node-shortest-path node-legend-final",
+      },
     ];
 
     return (
@@ -45,7 +102,7 @@ export default class Visualizer extends Component {
         <button
           className="btn btn-warning mt-4 mr-2"
           style={{ border: "2px solid black" }}
-          onClick={this.visualize}
+          onClick={() => this.visualize()}
         >
           Visualize Dijkstra's Algorithm
         </button>
@@ -53,19 +110,19 @@ export default class Visualizer extends Component {
           className="btn btn-danger mt-4 ml-2 disabled"
           style={{ border: "2px solid black" }}
         >
-          Reset Grid
+          Reset board
         </button>
 
-        {/* Grid Layout */}
-        <div className="grid-layout">
-          {grid.map((gridRow, gridRowIdx) => {
+        {/* Board Layout */}
+        <div className="board-layout">
+          {board.map((boardRow, boardRowIdx) => {
             return (
-              <div key={gridRowIdx} className="grid-row">
-                {gridRow.map((gridCol, gridColIdx) => {
-                  const { row, col, isSourceNode, isTargetNode } = gridCol;
+              <div key={boardRowIdx} className="board-row">
+                {boardRow.map((boardCol, boardColIdx) => {
+                  const { row, col, isSourceNode, isTargetNode } = boardCol;
                   return (
                     <Node
-                      key={gridColIdx}
+                      key={boardColIdx}
                       row={row}
                       col={col}
                       isSourceNode={isSourceNode}
@@ -77,21 +134,20 @@ export default class Visualizer extends Component {
             );
           })}
         </div>
+        <h3 style={{ textShadow: "0 0 10px orange" }}>
+          The number of nodes between source and target node: {pathLength}
+        </h3>
 
         {/* Legend */}
         <div className="btn" style={{ cursor: "default" }}>
           <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
             Legend:
           </div>
-          {legend.map((legendItem) => {
-            const { name, bgColor } = legendItem;
+          {legend.map((legendItem, idx) => {
+            const { name, nodeClass } = legendItem;
             return (
-              <button className="mr-2" style={{ cursor: "default" }}>
-                <div
-                  className="node node-legend"
-                  style={{ backgroundColor: `${bgColor}` }}
-                ></div>{" "}
-                {name}
+              <button key={idx} className="mr-2" style={{ cursor: "default" }}>
+                <div className={`node node-legend ${nodeClass}`}></div> {name}
               </button>
             );
           })}
@@ -101,26 +157,26 @@ export default class Visualizer extends Component {
   }
 }
 
-// Creates a 2D array of grid, of given dimensions
-// Each node of the grid, has its own set of properties
-const getGridArray = () => {
-  const grid = [];
-  for (let row = 0; row < GRID_HEIGHT; row++) {
+// Creates a 2D array of board, of given dimensions
+// Each node of the board, has its own set of properties
+const getBoardArray = () => {
+  const board = [];
+  for (let row = 0; row < BOARD_HEIGHT; row++) {
     let currRow = [];
-    for (let col = 0; col < GRID_WIDTH; col++) {
+    for (let col = 0; col < BOARD_WIDTH; col++) {
       let node = createNode(row, col);
       currRow.push(node);
     }
-    grid.push(currRow);
+    board.push(currRow);
   }
-  return grid;
+  return board;
 };
 
-// Creates a Node object, which combine together to form the grid
+// Creates a Node object, which combine together to form the board
 const createNode = (row, col) => {
   return {
-    col,
     row,
+    col,
     distance: Infinity,
     isVisited: false,
     parentNode: null,

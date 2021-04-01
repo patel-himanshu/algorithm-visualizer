@@ -1,0 +1,10 @@
+:root {
+  --shortest-path: rgb(132, 193, 250);
+  --source: rgb(0, 177, 0);
+  --target: rgb(255, 49, 49);
+  --unvisited: gainsboro;
+  --unvisited-outline: black;
+  --visited: rgb(250, 250, 103);
+  --wall: rgb(187, 2, 187);
+  --wall-outline: blue;
+}

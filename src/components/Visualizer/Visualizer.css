@@ -1,8 +1,8 @@
-.grid-layout {
+.board-layout {
   padding: 1rem;
 }
 
-.grid-row {
+.board-row {
   margin-bottom: -4px;
 }
 
@@ -10,4 +10,9 @@
   margin: 0;
   width: 15px;
   height: 15px;
+}
+
+.node-legend-final {
+  outline: 1px solid var(--wall-outline);
+  box-shadow: 0 0 5px inset var(--wall-outline);
 }

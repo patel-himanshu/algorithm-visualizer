@@ -1,11 +1,33 @@
+.node {
+  margin: 2px;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  outline: 1px solid var(--unvisited-outline);
+  background-color: var(--unvisited);
+}
+
 .node-source {
-  background-color: green;
+  background-color: var(--source);
 }
 
 .node-target {
-  background-color: red;
+  background-color: var(--target);
 }
 
 .node-wall {
-  background-color: black;
+  background-color: var(--wall);
+}
+
+.node-visited {
+  background-color: var(--visited);
+}
+
+.node-shortest-path {
+  background-color: var(--shortest-path);
+}
+
+.node-final {
+  outline: 1px solid var(--wall-outline);
+  box-shadow: 0 0 5px inset var(--wall-outline);
 }
