@@ -5,10 +5,10 @@ import "./Visualizer.css";
 
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 10;
-const SOURCE_NODE_ROW = 3;
+const SOURCE_NODE_ROW = 4;
 const SOURCE_NODE_COL = 3;
-const TARGET_NODE_ROW = 5;
-const TARGET_NODE_COL = 5;
+const TARGET_NODE_ROW = 2;
+const TARGET_NODE_COL = 6;
 
 // const BOARD_WIDTH = 3;
 // const BOARD_HEIGHT = 3;
@@ -114,32 +114,34 @@ export default class Visualizer extends Component {
         </button>
 
         {/* Board Layout */}
-        <div className="board-layout">
-          {board.map((boardRow, boardRowIdx) => {
-            return (
-              <div key={boardRowIdx} className="board-row">
-                {boardRow.map((boardCol, boardColIdx) => {
-                  const { row, col, isSourceNode, isTargetNode } = boardCol;
-                  return (
-                    <Node
-                      key={boardColIdx}
-                      row={row}
-                      col={col}
-                      isSourceNode={isSourceNode}
-                      isTargetNode={isTargetNode}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="mb-2">
+          <div className="board-layout">
+            {board.map((boardRow, boardRowIdx) => {
+              return (
+                <div key={boardRowIdx} className="board-row">
+                  {boardRow.map((boardCol, boardColIdx) => {
+                    const { row, col, isSourceNode, isTargetNode } = boardCol;
+                    return (
+                      <Node
+                        key={boardColIdx}
+                        row={row}
+                        col={col}
+                        isSourceNode={isSourceNode}
+                        isTargetNode={isTargetNode}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+          <h3 style={{ textShadow: "0 0 10px orange" }}>
+            The number of nodes between source and target node: {pathLength}
+          </h3>
         </div>
-        <h3 style={{ textShadow: "0 0 10px orange" }}>
-          The number of nodes between source and target node: {pathLength}
-        </h3>
 
         {/* Legend */}
-        <div className="btn" style={{ cursor: "default" }}>
+        <div className="container legend mt-3 mb-3">
           <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
             Legend:
           </div>

@@ -1,3 +1,10 @@
+.legend {
+  padding: 0.5rem 0;
+  border-radius: 0.5rem;
+  border: 3px solid green;
+  background-color: rgb(193, 251, 118);
+}
+
 .board-layout {
   padding: 1rem;
 }
