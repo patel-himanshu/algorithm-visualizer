@@ -82,6 +82,12 @@ export default class Visualizer extends Component {
     this.animateDijkstra(visitedNodes, shortestPathOrder);
   }
 
+  handleBoardReset() {
+    window.location.reload(false);
+    // const board = getBoardArray();
+    // this.setState({ board: board, pathLength: 0 });
+  }
+
   render() {
     const { board, pathLength } = this.state;
     const legend = [
@@ -103,14 +109,17 @@ export default class Visualizer extends Component {
           className="btn btn-warning mt-4 mr-2"
           style={{ border: "2px solid black" }}
           onClick={() => this.visualize()}
+          onMouseDown={(e) => e.preventDefault()}
         >
           Visualize Dijkstra's Algorithm
         </button>
         <button
-          className="btn btn-danger mt-4 ml-2 disabled"
+          className="btn btn-danger mt-4 ml-2"
           style={{ border: "2px solid black" }}
+          onClick={() => this.handleBoardReset()}
+          onMouseDown={(e) => e.preventDefault()}
         >
-          Reset board
+          Reset Board
         </button>
 
         {/* Board Layout */}
