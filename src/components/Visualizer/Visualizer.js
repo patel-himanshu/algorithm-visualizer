@@ -4,32 +4,33 @@ import Legend from "../Legend/Legend";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-// const BOARD_WIDTH = 10;
-// const BOARD_HEIGHT = 10;
-// const SOURCE_NODE_ROW = 4;
-// const SOURCE_NODE_COL = 3;
-// const TARGET_NODE_ROW = 2;
-// const TARGET_NODE_COL = 6;
-
-const BOARD_WIDTH = 3;
-const BOARD_HEIGHT = 3;
-const SOURCE_NODE_ROW = 1;
-const SOURCE_NODE_COL = 0;
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 10;
+const SOURCE_NODE_ROW = 4;
+const SOURCE_NODE_COL = 3;
 const TARGET_NODE_ROW = 2;
-const TARGET_NODE_COL = 2;
+const TARGET_NODE_COL = 6;
+
+// const BOARD_WIDTH = 3;
+// const BOARD_HEIGHT = 3;
+// const SOURCE_NODE_ROW = 1;
+// const SOURCE_NODE_COL = 0;
+// const TARGET_NODE_ROW = 2;
+// const TARGET_NODE_COL = 2;
 
 export default class Visualizer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       board: [],
-      pathLength: 0,
-      boardDims: { row: 3, col: 3 },
-      source: { row: 1, col: 0 },
-      target: { row: 2, col: 2 },
-      // boardDims: { row: BOARD_HEIGHT, col: BOARD_WIDTH },
-      // source: { row: SOURCE_NODE_ROW, col: SOURCE_NODE_COL },
-      // target: { row: TARGET_NODE_ROW, col: TARGET_NODE_COL },
+      pathLength: null,
+      numNodesVisited: 0,
+      boardRow: 3,
+      boardCol: 3,
+      sourceRow: 1,
+      sourceCol: 0,
+      targetRow: 2,
+      targetCol: 2,
     };
   }
 
@@ -39,11 +40,11 @@ export default class Visualizer extends Component {
     this.setState({ board: board });
   }
 
-  animateDijkstra(visitedNodes, shortestPathOrder) {
+  animateDijkstra(visitedNodes, pathExists, shortestPathOrder) {
     for (let i = 0; i <= visitedNodes.length; i++) {
       if (i === visitedNodes.length) {
         setTimeout(() => {
-          this.animateShortestPath(shortestPathOrder);
+          this.animateShortestPath(shortestPathOrder, pathExists);
         }, 20 * i);
         return;
       }
@@ -60,7 +61,7 @@ export default class Visualizer extends Component {
     }
   }
 
-  animateShortestPath(shortestPathOrder) {
+  animateShortestPath(shortestPathOrder, pathExists) {
     document.getElementById(
       `node-${SOURCE_NODE_ROW}-${SOURCE_NODE_COL}`
     ).className = "node node-source node-final";
@@ -76,16 +77,26 @@ export default class Visualizer extends Component {
     document.getElementById(
       `node-${TARGET_NODE_ROW}-${TARGET_NODE_COL}`
     ).className = "node node-target node-final";
-    this.setState({ pathLength: shortestPathOrder.length });
+
+    if (pathExists) {
+      this.setState({ pathLength: shortestPathOrder.length });
+    } else {
+      this.setState({ pathLength: Infinity });
+    }
   }
 
   visualize() {
     const { board } = this.state;
     const sourceNode = board[SOURCE_NODE_ROW][SOURCE_NODE_COL];
     const targetNode = board[TARGET_NODE_ROW][TARGET_NODE_COL];
-    const visitedNodes = dijkstra(board, sourceNode, targetNode);
+    const { visitedNodes, pathExists } = dijkstra(
+      board,
+      sourceNode,
+      targetNode
+    );
     const shortestPathOrder = getShortestPath(targetNode);
-    this.animateDijkstra(visitedNodes, shortestPathOrder);
+    this.animateDijkstra(visitedNodes, pathExists, shortestPathOrder);
+    this.setState({ numNodesVisited: visitedNodes.length });
   }
 
   handleBoardReset() {
@@ -94,26 +105,28 @@ export default class Visualizer extends Component {
     // this.setState({ board: board, pathLength: 0 });
   }
 
-  // handleClick(row, col) {
-  //   console.log("Clicked");
-  //   const { board } = this.state;
-  //   const node = board[row][col];
-  //   const newNode = {
-  //     ...node,
-  //     isWall: !node.isWall,
-  //   };
-  //   board[row][col] = newNode;
-  //   console.log(node);
-  //   console.log(newNode);
-  //   this.setState({ board });
-  // }
-
-  onFieldChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
+  handleClick(row, col) {
+    console.log("Clicked", row, col);
+    const { board } = this.state;
+    const node = board[row][col];
+    const newNode = {
+      ...node,
+      isWall: !node.isWall,
+    };
+    board[row][col] = newNode;
+    // console.log(node);
+    // console.log(newNode);
+    this.setState({ board });
+  }
 
   render() {
-    const { board, pathLength, boardDims, source, target } = this.state;
+    const {
+      board,
+      pathLength,
+      numNodesVisited,
+      boardRow,
+      boardCol,
+    } = this.state;
 
     return (
       <>
@@ -138,62 +151,8 @@ export default class Visualizer extends Component {
         {/* Board and Node Details */}
         <div className="container mt-2">
           <h4>
-            Board has {boardDims.row} rows and {boardDims.col} columns
+            Board has {boardRow} rows and {boardCol} columns
           </h4>
-          <form className="row d-flex justify-content-center align-items-center">
-            <div className="d-">
-              <label htmlFor="source.row">Source Node's Row:</label>
-              <input
-                className="form-control"
-                type="number"
-                id="source.row"
-                name="source.row"
-                min="1"
-                max={boardDims.row}
-                value={source.row + 1}
-                onChange={this.onFieldChange}
-              />
-            </div>
-            <div className="d-">
-              <label htmlFor="source.col">Source Node's Col:</label>
-              <input
-                className="form-control"
-                type="number"
-                id="source.col"
-                name="source.col"
-                min="1"
-                max={boardDims.col}
-                value={source.col + 1}
-                onChange={this.onFieldChange}
-              />
-            </div>
-            <div className="d-">
-              <label htmlFor="target.row">Target Node's Row:</label>
-              <input
-                className="form-control"
-                type="number"
-                id="target.row"
-                name="target.row"
-                min="1"
-                max={boardDims.row}
-                value={target.row + 1}
-                onChange={this.onFieldChange}
-              />
-            </div>
-            <div className="d-">
-              <label htmlFor="target.col">Target Node's Col:</label>
-              <input
-                className="form-control"
-                type="number"
-                id="target.col"
-                name="target.col"
-                min="1"
-                max={boardDims.col}
-                value={target.col + 1}
-                onChange={this.onFieldChange}
-              />
-            </div>
-          </form>
         </div>
 
         {/* Board Layout */}
@@ -218,7 +177,7 @@ export default class Visualizer extends Component {
                         isWall={isWall}
                         isSourceNode={isSourceNode}
                         isTargetNode={isTargetNode}
-                        // onClick={() => this.handleClick(row, col)}
+                        onClick={(row, col) => this.handleClick(row, col)}
                       />
                     );
                   })}
@@ -226,9 +185,15 @@ export default class Visualizer extends Component {
               );
             })}
           </div>
-          <h3 style={{ textShadow: "0 0 10px orange" }}>
-            The number of nodes between source and target node: {pathLength}
-          </h3>
+          {pathLength !== null && (
+            <div className="div">
+              <h4 style={{ textShadow: "0 0 10px orange" }}>
+                The number of nodes in shortest path between source and target
+                node: {pathLength}
+              </h4>
+              <h5>The total number of nodes visited: {numNodesVisited}</h5>
+            </div>
+          )}
         </div>
 
         {/* Legend */}

@@ -15,7 +15,7 @@ export default class Legend extends Component {
     ];
 
     return (
-      <div className="container legend mt-3 mb-3">
+      <div className="container legend mt-3 mb-3 fixed-bottom">
         <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
           Legend:
         </div>
