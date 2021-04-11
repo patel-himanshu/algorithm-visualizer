@@ -1,6 +1,6 @@
 export function dijkstra(board, sourceNode, targetNode) {
+  const result = { visitedNodes: [], pathExists: false };
   sourceNode.distance = 0;
-  const visitedNodes = [];
 
   // Creates a 1D array of unvisited nodes, which is sorted
   const priorityQueue = getAllNodes(board);
@@ -12,11 +12,19 @@ export function dijkstra(board, sourceNode, targetNode) {
     // Selects the unvisited node with least distance as nearest node,
     // sets it as the latest visited node and removes it from the unvisited nodes array
     const nearestNeighbourNode = priorityQueue.shift();
-    visitedNodes.push(nearestNeighbourNode);
+
+    if (nearestNeighbourNode.isWall) continue;
+    if (nearestNeighbourNode.distance === Infinity) {
+      result.pathExists = false;
+      return result;
+    }
+
+    result.visitedNodes.push(nearestNeighbourNode);
     nearestNeighbourNode.isVisited = true;
 
     if (nearestNeighbourNode === targetNode) {
-      return visitedNodes;
+      result.pathExists = true;
+      return result;
     }
 
     updateNeighbourNodes(board, nearestNeighbourNode);

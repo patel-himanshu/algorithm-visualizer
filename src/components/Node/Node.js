@@ -3,7 +3,14 @@ import "./Node.css";
 
 export default class Node extends Component {
   render() {
-    const { row, col, isWall, isSourceNode, isTargetNode } = this.props;
+    const {
+      row,
+      col,
+      isWall,
+      isSourceNode,
+      isTargetNode,
+      onClick,
+    } = this.props;
 
     let otherClassName = "";
     if (isSourceNode) {
@@ -15,7 +22,11 @@ export default class Node extends Component {
     }
 
     return (
-      <div id={`node-${row}-${col}`} className={`node ${otherClassName}`}></div>
+      <div
+        id={`node-${row}-${col}`}
+        className={`node ${otherClassName}`}
+        onClick={() => onClick(row, col)}
+      ></div>
     );
   }
 }
