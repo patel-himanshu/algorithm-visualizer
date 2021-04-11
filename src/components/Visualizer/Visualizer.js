@@ -4,7 +4,7 @@ import Legend from "../Legend/Legend";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-const BOARD_WIDTH = 20;
+const BOARD_WIDTH = 30;
 const BOARD_HEIGHT = 10;
 const SOURCE_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
 const SOURCE_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
@@ -110,9 +110,7 @@ export default class Visualizer extends Component {
 
   handleClick(row, col) {
     // console.log("Clicked", row, col);
-    if (this.state.isVisualizationStarted) {
-      return;
-    } else {
+    if (!this.state.isVisualizationStarted) {
       const { board } = this.state;
       const node = board[row][col];
       const newNode = {
@@ -134,6 +132,13 @@ export default class Visualizer extends Component {
       boardRow,
       boardCol,
     } = this.state;
+    let finalMessage =
+      pathLength === Infinity
+        ? "There is no path connecting the source and target node"
+        : pathLength === 0
+        ? "The source and target nodes are adjacent to each other"
+        : `The number of nodes in shortest path between source and target
+    node: ${pathLength}`;
 
     return (
       <>
@@ -195,10 +200,7 @@ export default class Visualizer extends Component {
           </div>
           {pathLength !== null && (
             <div className="div">
-              <h4 style={{ textShadow: "0 0 10px orange" }}>
-                The number of nodes in shortest path between source and target
-                node: {pathLength}
-              </h4>
+              <h4 style={{ textShadow: "0 0 10px orange" }}>{finalMessage}</h4>
               <h5>The total number of nodes visited: {numNodesVisited}</h5>
             </div>
           )}

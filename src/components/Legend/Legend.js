@@ -15,10 +15,10 @@ export default class Legend extends Component {
     ];
 
     return (
-      <div className="container legend mt-3 mb-3 fixed-bottom">
-        <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
+      <div className="container legend my-2 fixed-bottom">
+        {/* <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
           Legend:
-        </div>
+        </div> */}
         {legend.map((legendItem, idx) => {
           const { name, nodeClass } = legendItem;
           return (
@@ -27,6 +27,13 @@ export default class Legend extends Component {
             </button>
           );
         })}
+        <div
+          className="mt-1 font-weight-bold text-danger"
+          style={{ cursor: "default" }}
+        >
+          Note: View on the maximized window of a computer screen for better
+          experience.
+        </div>
       </div>
     );
   }
