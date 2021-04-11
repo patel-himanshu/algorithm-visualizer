@@ -3,13 +3,15 @@ import "./Node.css";
 
 export default class Node extends Component {
   render() {
-    const { row, col, isSourceNode, isTargetNode } = this.props;
+    const { row, col, isWall, isSourceNode, isTargetNode } = this.props;
 
     let otherClassName = "";
     if (isSourceNode) {
       otherClassName = "node-source";
     } else if (isTargetNode) {
       otherClassName = "node-target";
+    } else if (isWall) {
+      otherClassName = "node-wall";
     }
 
     return (

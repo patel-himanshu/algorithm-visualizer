@@ -1,21 +1,22 @@
 import React, { Component } from "react";
 import { dijkstra, getShortestPath } from "../../algorithms/Dijkstra";
+import Legend from "../Legend/Legend";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 10;
-const SOURCE_NODE_ROW = 4;
-const SOURCE_NODE_COL = 3;
-const TARGET_NODE_ROW = 2;
-const TARGET_NODE_COL = 6;
-
-// const BOARD_WIDTH = 3;
-// const BOARD_HEIGHT = 3;
-// const SOURCE_NODE_ROW = 1;
-// const SOURCE_NODE_COL = 0;
+// const BOARD_WIDTH = 10;
+// const BOARD_HEIGHT = 10;
+// const SOURCE_NODE_ROW = 4;
+// const SOURCE_NODE_COL = 3;
 // const TARGET_NODE_ROW = 2;
-// const TARGET_NODE_COL = 2;
+// const TARGET_NODE_COL = 6;
+
+const BOARD_WIDTH = 3;
+const BOARD_HEIGHT = 3;
+const SOURCE_NODE_ROW = 1;
+const SOURCE_NODE_COL = 0;
+const TARGET_NODE_ROW = 2;
+const TARGET_NODE_COL = 2;
 
 export default class Visualizer extends Component {
   constructor(props) {
@@ -23,7 +24,12 @@ export default class Visualizer extends Component {
     this.state = {
       board: [],
       pathLength: 0,
-      isDoubleClickActive: false,
+      boardDims: { row: 3, col: 3 },
+      source: { row: 1, col: 0 },
+      target: { row: 2, col: 2 },
+      // boardDims: { row: BOARD_HEIGHT, col: BOARD_WIDTH },
+      // source: { row: SOURCE_NODE_ROW, col: SOURCE_NODE_COL },
+      // target: { row: TARGET_NODE_ROW, col: TARGET_NODE_COL },
     };
   }
 
@@ -88,19 +94,26 @@ export default class Visualizer extends Component {
     // this.setState({ board: board, pathLength: 0 });
   }
 
+  // handleClick(row, col) {
+  //   console.log("Clicked");
+  //   const { board } = this.state;
+  //   const node = board[row][col];
+  //   const newNode = {
+  //     ...node,
+  //     isWall: !node.isWall,
+  //   };
+  //   board[row][col] = newNode;
+  //   console.log(node);
+  //   console.log(newNode);
+  //   this.setState({ board });
+  // }
+
+  onFieldChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
   render() {
-    const { board, pathLength } = this.state;
-    const legend = [
-      { name: "Source Node", nodeClass: "node-source" },
-      { name: "Target Node", nodeClass: "node-target" },
-      { name: "Wall Node", nodeClass: "node-wall" },
-      { name: "Unvisited Node", nodeClass: "node" },
-      { name: "Visited Node", nodeClass: "node-visited" },
-      {
-        name: "Shortest Path",
-        nodeClass: "node-shortest-path node-legend-final",
-      },
-    ];
+    const { board, pathLength, boardDims, source, target } = this.state;
 
     return (
       <>
@@ -122,6 +135,67 @@ export default class Visualizer extends Component {
           Reset Board
         </button>
 
+        {/* Board and Node Details */}
+        <div className="container mt-2">
+          <h4>
+            Board has {boardDims.row} rows and {boardDims.col} columns
+          </h4>
+          <form className="row d-flex justify-content-center align-items-center">
+            <div className="d-">
+              <label htmlFor="source.row">Source Node's Row:</label>
+              <input
+                className="form-control"
+                type="number"
+                id="source.row"
+                name="source.row"
+                min="1"
+                max={boardDims.row}
+                value={source.row + 1}
+                onChange={this.onFieldChange}
+              />
+            </div>
+            <div className="d-">
+              <label htmlFor="source.col">Source Node's Col:</label>
+              <input
+                className="form-control"
+                type="number"
+                id="source.col"
+                name="source.col"
+                min="1"
+                max={boardDims.col}
+                value={source.col + 1}
+                onChange={this.onFieldChange}
+              />
+            </div>
+            <div className="d-">
+              <label htmlFor="target.row">Target Node's Row:</label>
+              <input
+                className="form-control"
+                type="number"
+                id="target.row"
+                name="target.row"
+                min="1"
+                max={boardDims.row}
+                value={target.row + 1}
+                onChange={this.onFieldChange}
+              />
+            </div>
+            <div className="d-">
+              <label htmlFor="target.col">Target Node's Col:</label>
+              <input
+                className="form-control"
+                type="number"
+                id="target.col"
+                name="target.col"
+                min="1"
+                max={boardDims.col}
+                value={target.col + 1}
+                onChange={this.onFieldChange}
+              />
+            </div>
+          </form>
+        </div>
+
         {/* Board Layout */}
         <div className="mb-2">
           <div className="board-layout">
@@ -129,14 +203,22 @@ export default class Visualizer extends Component {
               return (
                 <div key={boardRowIdx} className="board-row">
                   {boardRow.map((boardCol, boardColIdx) => {
-                    const { row, col, isSourceNode, isTargetNode } = boardCol;
+                    const {
+                      row,
+                      col,
+                      isWall,
+                      isSourceNode,
+                      isTargetNode,
+                    } = boardCol;
                     return (
                       <Node
                         key={boardColIdx}
                         row={row}
                         col={col}
+                        isWall={isWall}
                         isSourceNode={isSourceNode}
                         isTargetNode={isTargetNode}
+                        // onClick={() => this.handleClick(row, col)}
                       />
                     );
                   })}
@@ -150,19 +232,7 @@ export default class Visualizer extends Component {
         </div>
 
         {/* Legend */}
-        <div className="container legend mt-3 mb-3">
-          <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
-            Legend:
-          </div>
-          {legend.map((legendItem, idx) => {
-            const { name, nodeClass } = legendItem;
-            return (
-              <button key={idx} className="mr-2" style={{ cursor: "default" }}>
-                <div className={`node node-legend ${nodeClass}`}></div> {name}
-              </button>
-            );
-          })}
-        </div>
+        <Legend />
       </>
     );
   }
@@ -191,6 +261,7 @@ const createNode = (row, col) => {
     distance: Infinity,
     isVisited: false,
     parentNode: null,
+    isWall: false,
     isSourceNode: row === SOURCE_NODE_ROW && col === SOURCE_NODE_COL,
     isTargetNode: row === TARGET_NODE_ROW && col === TARGET_NODE_COL,
   };

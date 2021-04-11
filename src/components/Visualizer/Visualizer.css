@@ -23,3 +23,13 @@
   outline: 1px solid var(--wall-outline);
   box-shadow: 0 0 5px inset var(--wall-outline);
 }
+
+label {
+  font-weight: 500;
+  padding: 0.5rem;
+}
+
+input[type="number"] {
+  width: 4rem;
+  height: 30px;
+}
