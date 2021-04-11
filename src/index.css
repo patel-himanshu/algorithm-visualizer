@@ -5,6 +5,8 @@
   --unvisited: gainsboro;
   --unvisited-outline: black;
   --visited: rgb(250, 250, 103);
-  --wall: rgb(124, 0, 124);
-  --wall-outline: blue;
+  --wall: rgb(161, 127, 14);
+  /* --wall: rgb(124, 0, 124); */
+  --wall-outline: rgb(75, 63, 30);
+  --node-outline: blue;
 }

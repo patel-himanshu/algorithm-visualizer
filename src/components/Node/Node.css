@@ -17,6 +17,7 @@
 
 .node-wall {
   background-color: var(--wall);
+  box-shadow: 0 0 10px inset var(--wall-outline);
 }
 
 .node-visited {
@@ -28,6 +29,6 @@
 }
 
 .node-final {
-  outline: 1px solid var(--wall-outline);
-  box-shadow: 0 0 5px inset var(--wall-outline);
+  outline: 1px solid var(--node-outline);
+  box-shadow: 0 0 5px inset var(--node-outline);
 }

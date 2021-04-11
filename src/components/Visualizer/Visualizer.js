@@ -4,12 +4,12 @@ import Legend from "../Legend/Legend";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-const BOARD_WIDTH = 10;
+const BOARD_WIDTH = 20;
 const BOARD_HEIGHT = 10;
-const SOURCE_NODE_ROW = 4;
-const SOURCE_NODE_COL = 3;
-const TARGET_NODE_ROW = 2;
-const TARGET_NODE_COL = 6;
+const SOURCE_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
+const SOURCE_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
+const TARGET_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
+const TARGET_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
 
 // const BOARD_WIDTH = 3;
 // const BOARD_HEIGHT = 3;
@@ -23,14 +23,15 @@ export default class Visualizer extends Component {
     super(props);
     this.state = {
       board: [],
+      isVisualizationStarted: false,
       pathLength: null,
       numNodesVisited: 0,
-      boardRow: 3,
-      boardCol: 3,
-      sourceRow: 1,
-      sourceCol: 0,
-      targetRow: 2,
-      targetCol: 2,
+      boardRow: BOARD_WIDTH,
+      boardCol: BOARD_HEIGHT,
+      sourceRow: SOURCE_NODE_ROW,
+      sourceCol: SOURCE_NODE_COL,
+      targetRow: TARGET_NODE_ROW,
+      targetCol: TARGET_NODE_COL,
     };
   }
 
@@ -86,6 +87,7 @@ export default class Visualizer extends Component {
   }
 
   visualize() {
+    this.setState({ isVisualizationStarted: true });
     const { board } = this.state;
     const sourceNode = board[SOURCE_NODE_ROW][SOURCE_NODE_COL];
     const targetNode = board[TARGET_NODE_ROW][TARGET_NODE_COL];
@@ -101,22 +103,27 @@ export default class Visualizer extends Component {
 
   handleBoardReset() {
     window.location.reload(false);
+    this.state({ isVisualizationStarted: false });
     // const board = getBoardArray();
     // this.setState({ board: board, pathLength: 0 });
   }
 
   handleClick(row, col) {
-    console.log("Clicked", row, col);
-    const { board } = this.state;
-    const node = board[row][col];
-    const newNode = {
-      ...node,
-      isWall: !node.isWall,
-    };
-    board[row][col] = newNode;
-    // console.log(node);
-    // console.log(newNode);
-    this.setState({ board });
+    // console.log("Clicked", row, col);
+    if (this.state.isVisualizationStarted) {
+      return;
+    } else {
+      const { board } = this.state;
+      const node = board[row][col];
+      const newNode = {
+        ...node,
+        isWall: !node.isWall,
+      };
+      board[row][col] = newNode;
+      // console.log(node);
+      // console.log(newNode);
+      this.setState({ board });
+    }
   }
 
   render() {
@@ -136,6 +143,7 @@ export default class Visualizer extends Component {
           style={{ border: "2px solid black" }}
           onClick={() => this.visualize()}
           onMouseDown={(e) => e.preventDefault()}
+          disabled={this.state.isVisualizationStarted}
         >
           Visualize Dijkstra's Algorithm
         </button>
