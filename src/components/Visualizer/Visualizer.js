@@ -1,22 +1,16 @@
 import React, { Component } from "react";
 import { dijkstra, getShortestPath } from "../../algorithms/Dijkstra";
-import Legend from "../Legend/Legend";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-const BOARD_WIDTH = 30;
-const BOARD_HEIGHT = 10;
+// const BOARD_WIDTH = 30;
+// const BOARD_HEIGHT = 10;
+const BOARD_WIDTH = 8;
+const BOARD_HEIGHT = 7;
 const SOURCE_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
 const SOURCE_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
 const TARGET_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
 const TARGET_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
-
-// const BOARD_WIDTH = 3;
-// const BOARD_HEIGHT = 3;
-// const SOURCE_NODE_ROW = 1;
-// const SOURCE_NODE_COL = 0;
-// const TARGET_NODE_ROW = 2;
-// const TARGET_NODE_COL = 2;
 
 export default class Visualizer extends Component {
   constructor(props) {
@@ -101,6 +95,8 @@ export default class Visualizer extends Component {
     this.setState({ numNodesVisited: visitedNodes.length });
   }
 
+  // =========== EVENT HANDLERS ===========
+
   handleBoardReset() {
     window.location.reload(false);
     this.state({ isVisualizationStarted: false });
@@ -115,7 +111,7 @@ export default class Visualizer extends Component {
       const node = board[row][col];
       const newNode = {
         ...node,
-        isWall: !node.isWall,
+        isWallNode: !node.isWallNode,
       };
       board[row][col] = newNode;
       // console.log(node);
@@ -132,6 +128,8 @@ export default class Visualizer extends Component {
       boardRow,
       boardCol,
     } = this.state;
+
+    // Determines the final message shown after visualization is completed
     let finalMessage =
       pathLength === Infinity
         ? "There is no path connecting the source and target node"
@@ -161,7 +159,7 @@ export default class Visualizer extends Component {
           Reset Board
         </button>
 
-        {/* Board and Node Details */}
+        {/* Board Details */}
         <div className="container mt-2">
           <h4>
             Board has {boardRow} rows and {boardCol} columns
@@ -178,7 +176,7 @@ export default class Visualizer extends Component {
                     const {
                       row,
                       col,
-                      isWall,
+                      isWallNode,
                       isSourceNode,
                       isTargetNode,
                     } = boardCol;
@@ -187,7 +185,7 @@ export default class Visualizer extends Component {
                         key={boardColIdx}
                         row={row}
                         col={col}
-                        isWall={isWall}
+                        isWallNode={isWallNode}
                         isSourceNode={isSourceNode}
                         isTargetNode={isTargetNode}
                         onClick={(row, col) => this.handleClick(row, col)}
@@ -198,6 +196,8 @@ export default class Visualizer extends Component {
               );
             })}
           </div>
+
+          {/* Final message after visualization completion */}
           {pathLength !== null && (
             <div className="div">
               <h4 style={{ textShadow: "0 0 10px orange" }}>{finalMessage}</h4>
@@ -205,9 +205,6 @@ export default class Visualizer extends Component {
             </div>
           )}
         </div>
-
-        {/* Legend */}
-        <Legend />
       </>
     );
   }
@@ -236,7 +233,7 @@ const createNode = (row, col) => {
     distance: Infinity,
     isVisited: false,
     parentNode: null,
-    isWall: false,
+    isWallNode: false,
     isSourceNode: row === SOURCE_NODE_ROW && col === SOURCE_NODE_COL,
     isTargetNode: row === TARGET_NODE_ROW && col === TARGET_NODE_COL,
   };

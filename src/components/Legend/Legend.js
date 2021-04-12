@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "./Legend.css";
 
 export default class Legend extends Component {
   render() {
@@ -15,14 +16,18 @@ export default class Legend extends Component {
     ];
 
     return (
-      <div className="container legend my-2 fixed-bottom">
+      <div className="legend py-2">
         {/* <div className="mb-1 font-weight-bold" style={{ cursor: "default" }}>
           Legend:
         </div> */}
         {legend.map((legendItem, idx) => {
           const { name, nodeClass } = legendItem;
           return (
-            <button key={idx} className="mr-2" style={{ cursor: "default" }}>
+            <button
+              key={idx}
+              className="mr-2 my-1"
+              style={{ cursor: "default" }}
+            >
               <div className={`node node-legend ${nodeClass}`}></div> {name}
             </button>
           );

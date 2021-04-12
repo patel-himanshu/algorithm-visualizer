@@ -1,4 +1,5 @@
 import "./App.css";
+import Legend from "./components/Legend/Legend";
 import Navbar from "./components/Navbar/Navbar";
 import Visualizer from "./components/Visualizer/Visualizer";
 
@@ -7,6 +8,7 @@ function App() {
     <div className="App">
       <Navbar />
       <Visualizer />
+      <Legend />
     </div>
   );
 }

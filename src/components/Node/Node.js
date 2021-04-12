@@ -6,7 +6,7 @@ export default class Node extends Component {
     const {
       row,
       col,
-      isWall,
+      isWallNode,
       isSourceNode,
       isTargetNode,
       onClick,
@@ -17,7 +17,7 @@ export default class Node extends Component {
       otherClassName = "node-source";
     } else if (isTargetNode) {
       otherClassName = "node-target";
-    } else if (isWall) {
+    } else if (isWallNode) {
       otherClassName = "node-wall";
     }
 
