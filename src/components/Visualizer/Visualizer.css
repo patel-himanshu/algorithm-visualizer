@@ -1,3 +1,8 @@
+.visualizer {
+  min-height: 75vh;
+  /* min-height: calc(90vh - 5rem); */
+}
+
 .board-layout {
   padding: 1rem;
 }

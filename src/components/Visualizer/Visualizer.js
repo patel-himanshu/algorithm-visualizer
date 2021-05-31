@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { dijkstra, getShortestPath } from "../../algorithms/Dijkstra";
 import Node from "../Node/Node";
 import "./Visualizer.css";
@@ -11,204 +11,6 @@ const SOURCE_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
 const SOURCE_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
 const TARGET_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
 const TARGET_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
-
-export default class Visualizer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      board: [],
-      isVisualizationStarted: false,
-      pathLength: null,
-      numNodesVisited: 0,
-      boardRow: BOARD_WIDTH,
-      boardCol: BOARD_HEIGHT,
-      sourceRow: SOURCE_NODE_ROW,
-      sourceCol: SOURCE_NODE_COL,
-      targetRow: TARGET_NODE_ROW,
-      targetCol: TARGET_NODE_COL,
-    };
-  }
-
-  // Creates a 2D board array after the mounting phase of the component gets completed
-  componentDidMount() {
-    const board = getBoardArray();
-    this.setState({ board: board });
-  }
-
-  animateDijkstra(visitedNodes, pathExists, shortestPathOrder) {
-    for (let i = 0; i <= visitedNodes.length; i++) {
-      if (i === visitedNodes.length) {
-        setTimeout(() => {
-          this.animateShortestPath(shortestPathOrder, pathExists);
-        }, 20 * i);
-        return;
-      }
-      setTimeout(() => {
-        const node = visitedNodes[i];
-        if (
-          !(node.row === SOURCE_NODE_ROW && node.col === SOURCE_NODE_COL) &&
-          !(node.row === TARGET_NODE_ROW && node.col === TARGET_NODE_COL)
-        ) {
-          document.getElementById(`node-${node.row}-${node.col}`).className =
-            "node node-visited";
-        }
-      }, 20 * i);
-    }
-  }
-
-  animateShortestPath(shortestPathOrder, pathExists) {
-    document.getElementById(
-      `node-${SOURCE_NODE_ROW}-${SOURCE_NODE_COL}`
-    ).className = "node node-source node-final";
-
-    for (let i = 0; i < shortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const node = shortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-shortest-path node-final";
-      }, 100 * i);
-    }
-
-    document.getElementById(
-      `node-${TARGET_NODE_ROW}-${TARGET_NODE_COL}`
-    ).className = "node node-target node-final";
-
-    if (pathExists) {
-      this.setState({ pathLength: shortestPathOrder.length });
-    } else {
-      this.setState({ pathLength: Infinity });
-    }
-  }
-
-  visualize() {
-    this.setState({ isVisualizationStarted: true });
-    const { board } = this.state;
-    const sourceNode = board[SOURCE_NODE_ROW][SOURCE_NODE_COL];
-    const targetNode = board[TARGET_NODE_ROW][TARGET_NODE_COL];
-    const { visitedNodes, pathExists } = dijkstra(
-      board,
-      sourceNode,
-      targetNode
-    );
-    const shortestPathOrder = getShortestPath(targetNode);
-    this.animateDijkstra(visitedNodes, pathExists, shortestPathOrder);
-    this.setState({ numNodesVisited: visitedNodes.length });
-  }
-
-  // =========== EVENT HANDLERS ===========
-
-  handleBoardReset() {
-    window.location.reload(false);
-    this.state({ isVisualizationStarted: false });
-    // const board = getBoardArray();
-    // this.setState({ board: board, pathLength: 0 });
-  }
-
-  handleClick(row, col) {
-    // console.log("Clicked", row, col);
-    if (!this.state.isVisualizationStarted) {
-      const { board } = this.state;
-      const node = board[row][col];
-      const newNode = {
-        ...node,
-        isWallNode: !node.isWallNode,
-      };
-      board[row][col] = newNode;
-      // console.log(node);
-      // console.log(newNode);
-      this.setState({ board });
-    }
-  }
-
-  render() {
-    const {
-      board,
-      pathLength,
-      numNodesVisited,
-      boardRow,
-      boardCol,
-    } = this.state;
-
-    // Determines the final message shown after visualization is completed
-    let finalMessage =
-      pathLength === Infinity
-        ? "There is no path connecting the source and target node"
-        : pathLength === 0
-        ? "The source and target nodes are adjacent to each other"
-        : `The number of nodes in shortest path between source and target
-    node: ${pathLength}`;
-
-    return (
-      <>
-        {/* Action Buttons */}
-        <button
-          className="btn btn-warning mt-4 mr-2"
-          style={{ border: "2px solid black" }}
-          onClick={() => this.visualize()}
-          onMouseDown={(e) => e.preventDefault()}
-          disabled={this.state.isVisualizationStarted}
-        >
-          Visualize Dijkstra's Algorithm
-        </button>
-        <button
-          className="btn btn-danger mt-4 ml-2"
-          style={{ border: "2px solid black" }}
-          onClick={() => this.handleBoardReset()}
-          onMouseDown={(e) => e.preventDefault()}
-        >
-          Reset Board
-        </button>
-
-        {/* Board Details */}
-        <div className="container mt-2">
-          <h4>
-            Board has {boardRow} rows and {boardCol} columns
-          </h4>
-        </div>
-
-        {/* Board Layout */}
-        <div className="mb-2">
-          <div className="board-layout">
-            {board.map((boardRow, boardRowIdx) => {
-              return (
-                <div key={boardRowIdx} className="board-row">
-                  {boardRow.map((boardCol, boardColIdx) => {
-                    const {
-                      row,
-                      col,
-                      isWallNode,
-                      isSourceNode,
-                      isTargetNode,
-                    } = boardCol;
-                    return (
-                      <Node
-                        key={boardColIdx}
-                        row={row}
-                        col={col}
-                        isWallNode={isWallNode}
-                        isSourceNode={isSourceNode}
-                        isTargetNode={isTargetNode}
-                        onClick={(row, col) => this.handleClick(row, col)}
-                      />
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Final message after visualization completion */}
-          {pathLength !== null && (
-            <div className="div">
-              <h4 style={{ textShadow: "0 0 10px orange" }}>{finalMessage}</h4>
-              <h5>The total number of nodes visited: {numNodesVisited}</h5>
-            </div>
-          )}
-        </div>
-      </>
-    );
-  }
-}
 
 // Creates a 2D array of board, of given dimensions
 // Each node of the board, has its own set of properties
@@ -238,3 +40,182 @@ const createNode = (row, col) => {
     isTargetNode: row === TARGET_NODE_ROW && col === TARGET_NODE_COL,
   };
 };
+
+const Visualizer = () => {
+  const [board, setBoard] = useState([]);
+  const [isVisualizationStarted, setIsVisualizationStarted] = useState(false);
+  const [pathLength, setPathLength] = useState(null);
+  const [numNodesVisited, setNumNodesVisited] = useState(0);
+  const [boardRow, setBoardRow] = useState(BOARD_WIDTH);
+  const [boardCol, setBoardCol] = useState(BOARD_HEIGHT);
+  const [sourceRow, setSourceRow] = useState(SOURCE_NODE_ROW);
+  const [sourceCol, setSourceCol] = useState(SOURCE_NODE_COL);
+  const [targetRow, setTargetRow] = useState(TARGET_NODE_ROW);
+  const [targetCol, setTargetCol] = useState(TARGET_NODE_COL);
+
+  // Creates a 2D board array after the mounting phase of the component gets completed
+  useEffect(() => {
+    const board = getBoardArray();
+    setBoard(board);
+  }, []);
+
+  const animateDijkstra = (visitedNodes, pathExists, shortestPathOrder) => {
+    for (let i = 0; i <= visitedNodes.length; i++) {
+      if (i === visitedNodes.length) {
+        setTimeout(() => {
+          animateShortestPath(shortestPathOrder, pathExists);
+        }, 20 * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodes[i];
+        if (
+          !(node.row === SOURCE_NODE_ROW && node.col === SOURCE_NODE_COL) &&
+          !(node.row === TARGET_NODE_ROW && node.col === TARGET_NODE_COL)
+        ) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited";
+        }
+      }, 20 * i);
+    }
+  };
+
+  const animateShortestPath = (shortestPathOrder, pathExists) => {
+    document.getElementById(
+      `node-${SOURCE_NODE_ROW}-${SOURCE_NODE_COL}`
+    ).className = "node node-source node-final";
+
+    for (let i = 0; i < shortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = shortestPathOrder[i];
+        document.getElementById(`node-${node.row}-${node.col}`).className =
+          "node node-shortest-path node-final";
+      }, 100 * i);
+    }
+
+    document.getElementById(
+      `node-${TARGET_NODE_ROW}-${TARGET_NODE_COL}`
+    ).className = "node node-target node-final";
+
+    if (pathExists) {
+      setPathLength(shortestPathOrder.length);
+    } else {
+      setPathLength(Infinity);
+    }
+  };
+
+  const visualize = () => {
+    setIsVisualizationStarted(true);
+    const sourceNode = board[SOURCE_NODE_ROW][SOURCE_NODE_COL];
+    const targetNode = board[TARGET_NODE_ROW][TARGET_NODE_COL];
+    const { visitedNodes, pathExists } = dijkstra(
+      board,
+      sourceNode,
+      targetNode
+    );
+    const shortestPathOrder = getShortestPath(targetNode);
+    animateDijkstra(visitedNodes, pathExists, shortestPathOrder);
+    setNumNodesVisited(visitedNodes.length);
+  };
+
+  // =========== EVENT HANDLERS ===========
+
+  const handleBoardReset = () => {
+    window.location.reload(false);
+    setIsVisualizationStarted(false);
+    // const board = getBoardArray();
+    // setBoard(board);
+    // setPathLength(0);
+  };
+
+  const handleClick = (row, col) => {
+    // console.log("Clicked", row, col);
+    if (!isVisualizationStarted) {
+      const node = board[row][col];
+      const newNode = {
+        ...node,
+        isWallNode: !node.isWallNode,
+      };
+      board[row][col] = newNode;
+      // console.log(node);
+      // console.log(newNode);
+      setBoard(board);
+    }
+  };
+
+  // Determines the final message shown after visualization is completed
+  let finalMessage =
+    pathLength === Infinity
+      ? "There is no path connecting the source and target node"
+      : pathLength === 0
+      ? "The source and target nodes are adjacent to each other"
+      : `The number of nodes in shortest path between source and target
+    node: ${pathLength}`;
+
+  return (
+    <div className="visualizer">
+      {/* Action Buttons */}
+      <button
+        className="btn btn-warning mt-4 mr-2"
+        style={{ border: "2px solid black" }}
+        onClick={() => visualize()}
+        onMouseDown={(e) => e.preventDefault()}
+        disabled={isVisualizationStarted}
+      >
+        Visualize Dijkstra's Algorithm
+      </button>
+      <button
+        className="btn btn-danger mt-4 ml-2"
+        style={{ border: "2px solid black" }}
+        onClick={() => handleBoardReset()}
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        Reset Board
+      </button>
+
+      {/* Board Details */}
+      <div className="container mt-2">
+        <h4>
+          Board has {boardRow} rows and {boardCol} columns
+        </h4>
+      </div>
+
+      {/* Board Layout */}
+      <div className="mb-2">
+        <div className="board-layout">
+          {board.map((boardRow, boardRowIdx) => {
+            return (
+              <div key={boardRowIdx} className="board-row">
+                {boardRow.map((boardCol, boardColIdx) => {
+                  const { row, col, isWallNode, isSourceNode, isTargetNode } =
+                    boardCol;
+                  return (
+                    <Node
+                      key={boardColIdx}
+                      row={row}
+                      col={col}
+                      isWallNode={isWallNode}
+                      isSourceNode={isSourceNode}
+                      isTargetNode={isTargetNode}
+                      onClick={(row, col) => handleClick(row, col)}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Final message after visualization completion */}
+        {pathLength !== null && (
+          <div className="div">
+            <h4 style={{ textShadow: "0 0 10px orange" }}>{finalMessage}</h4>
+            <h5>The total number of nodes visited: {numNodesVisited}</h5>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Visualizer;
