@@ -3,10 +3,8 @@ import { dijkstra, getShortestPath } from "../../algorithms/Dijkstra";
 import Node from "../Node/Node";
 import "./Visualizer.css";
 
-// const BOARD_WIDTH = 30;
-// const BOARD_HEIGHT = 10;
-const BOARD_WIDTH = 8;
-const BOARD_HEIGHT = 7;
+const BOARD_HEIGHT = 10;
+const BOARD_WIDTH = Math.floor(window.innerWidth / 40);
 const SOURCE_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
 const SOURCE_NODE_COL = Math.floor(Math.random() * BOARD_WIDTH);
 const TARGET_NODE_ROW = Math.floor(Math.random() * BOARD_HEIGHT);
@@ -46,6 +44,7 @@ const Visualizer = () => {
   const [isVisualizationStarted, setIsVisualizationStarted] = useState(false);
   const [pathLength, setPathLength] = useState(null);
   const [numNodesVisited, setNumNodesVisited] = useState(0);
+
   const [boardRow, setBoardRow] = useState(BOARD_WIDTH);
   const [boardCol, setBoardCol] = useState(BOARD_HEIGHT);
   const [sourceRow, setSourceRow] = useState(SOURCE_NODE_ROW);
