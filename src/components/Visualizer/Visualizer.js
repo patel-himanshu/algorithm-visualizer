@@ -128,17 +128,25 @@ const Visualizer = () => {
   };
 
   const handleClick = (row, col) => {
-    // console.log("Clicked", row, col);
     if (!isVisualizationStarted) {
-      const node = board[row][col];
-      const newNode = {
-        ...node,
-        isWallNode: !node.isWallNode,
-      };
-      board[row][col] = newNode;
-      // console.log(node);
-      // console.log(newNode);
-      setBoard(board);
+      let newBoard = board.map((rowElem, rowIdx) => {
+        if (rowIdx === row) {
+          let newRow = rowElem.map((colElem, colIdx) => {
+            if (colIdx === col) {
+              return {
+                ...colElem,
+                isWallNode: !colElem.isWallNode,
+              };
+            } else {
+              return colElem;
+            }
+          });
+          return newRow;
+        } else {
+          return rowElem;
+        }
+      });
+      setBoard(newBoard);
     }
   };
 
@@ -209,7 +217,10 @@ const Visualizer = () => {
         {pathLength !== null && (
           <div className="div">
             <h4 style={{ textShadow: "0 0 10px orange" }}>{finalMessage}</h4>
-            <h5>The total number of nodes visited: {numNodesVisited}</h5>
+            <h5>
+              The total number of nodes visited (including both nodes):{" "}
+              {numNodesVisited}
+            </h5>
           </div>
         )}
       </div>

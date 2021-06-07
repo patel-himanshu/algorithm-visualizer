@@ -13,7 +13,7 @@ export function dijkstra(board, sourceNode, targetNode) {
     // sets it as the latest visited node and removes it from the unvisited nodes array
     const nearestNeighbourNode = priorityQueue.shift();
 
-    if (nearestNeighbourNode.isWall) continue;
+    if (nearestNeighbourNode.isWallNode) continue;
     if (nearestNeighbourNode.distance === Infinity) {
       result.pathExists = false;
       return result;
