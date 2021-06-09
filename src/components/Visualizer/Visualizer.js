@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { dijkstra, getShortestPath } from "../../algorithms/Dijkstra";
 import Node from "../Node/Node";
 import "./Visualizer.css";
@@ -119,6 +119,27 @@ const Visualizer = () => {
 
   // =========== EVENT HANDLERS ===========
 
+  const handleRandomWallsCreation = () => {
+    const wallsNum = 1;
+    // const wallsNum = Math.floor(BOARD_HEIGHT * BOARD_WIDTH * 0.4);
+    // console.log(BOARD_HEIGHT * BOARD_WIDTH, wallsNum);
+    let i = 0;
+    while (i < wallsNum) {
+      let wallRow = Math.floor(Math.random() * BOARD_HEIGHT);
+      let wallCol = Math.floor(Math.random() * BOARD_WIDTH);
+      let node = board[wallRow][wallCol];
+
+      if (node.isSourceNode || node.isTargetNode) {
+        console.log(i, "pass");
+        continue;
+      } else {
+        handleNodeClick(wallRow, wallCol);
+        i++;
+        // console.log(i, wallRow, wallCol);
+      }
+    }
+  };
+
   const handleBoardReset = () => {
     window.location.reload(false);
     setIsVisualizationStarted(false);
@@ -127,7 +148,7 @@ const Visualizer = () => {
     // setPathLength(0);
   };
 
-  const handleClick = (row, col) => {
+  const handleNodeClick = (row, col) => {
     if (!isVisualizationStarted) {
       let newBoard = board.map((rowElem, rowIdx) => {
         if (rowIdx === row) {
@@ -172,6 +193,16 @@ const Visualizer = () => {
         Visualize Dijkstra's Algorithm
       </button>
       <button
+        className="btn btn-secondary mt-4"
+        style={{ border: "2px solid black " }}
+        onClick={() => handleRandomWallsCreation()}
+        onMouseDown={(e) => e.preventDefault()}
+        disabled={isVisualizationStarted}
+      >
+        Create Random Wall
+        {/* Create Random Walls */}
+      </button>
+      <button
         className="btn btn-danger mt-4 ml-2"
         style={{ border: "2px solid black" }}
         onClick={() => handleBoardReset()}
@@ -204,7 +235,7 @@ const Visualizer = () => {
                       isWallNode={isWallNode}
                       isSourceNode={isSourceNode}
                       isTargetNode={isTargetNode}
-                      onClick={(row, col) => handleClick(row, col)}
+                      onClick={(row, col) => handleNodeClick(row, col)}
                     />
                   );
                 })}
@@ -215,7 +246,7 @@ const Visualizer = () => {
 
         {/* Final message after visualization completion */}
         {pathLength !== null && (
-          <div className="div">
+          <div className="message">
             <h4 style={{ textShadow: "0 0 10px orange" }}>{finalMessage}</h4>
             <h5>
               The total number of nodes visited (including both nodes):{" "}
