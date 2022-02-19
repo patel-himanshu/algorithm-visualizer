@@ -1,0 +1,9 @@
+nav {
+	/* background-color: #f3a81e; */
+	background-color: #94763e;
+	filter: drop-shadow(0 0 2px rgb(238, 255, 3));
+}
+
+.logo {
+	width: 2.25rem;
+}
